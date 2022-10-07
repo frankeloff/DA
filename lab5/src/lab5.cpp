@@ -3,7 +3,6 @@
 #include <string>
 #include <vector>
 #include <algorithm>
-#include <fstream> 
 
 class SuffTree{
 public:
@@ -47,7 +46,7 @@ public:
     Node *root;
     Node *cur_node;
     int cur_edge;
-    int pos = 0; //позиция на ребре, предположительный разрыв
+    int pos = 0;
 
     Node *last_add = nullptr;
 
@@ -60,28 +59,22 @@ public:
         last_add = nullptr;
         ++count_suff;
         while(count_suff){
-            //если мы в узле, то выбираем ребро
             if(pos == 0){
                 cur_edge = inpos;
             }
-            //проверяем существование ребра
             if(cur_node->edges.find(text[cur_edge])==cur_node->edges.end()){
-                //если такого нет, то создаем новый лист и пробуем создать суфф ссылку
                 CreateList(inpos, cur_node);
                 CreateSufflink(cur_node);
             } else {
-                //если позиция длинее ребра, то переходим дальше и все перепроверяем
                 if(EdgeFault()){
                     continue;
                 }
-                //если символ существует, то переходим в него, создаем суфф ссылку и ничего больше не делаем
                 Node *edge = cur_node->edges[text[cur_edge]];
                 if(text[edge->l+pos] == text[inpos]){
                     CreateSufflink(cur_node);
                     ++pos;
                     break;
                 } else {
-                    //разрываем вершину, создаем новый лист, привязываем суфф ссылку
                     BreakCreationNode(inpos);
                 }
             }
@@ -116,7 +109,7 @@ public:
     }
 
     void BreakCreationNode(int inpos){
-        Node *edge = cur_node->edges[text[cur_edge]]; // разделяем существующую и прикрепляем еще одну к split_node
+        Node *edge = cur_node->edges[text[cur_edge]];
         Node *split_node = new Node(edge->l,edge->l + pos - 1, -1);
         cur_node->edges[text[cur_edge]] = split_node;
         edge->l += pos;
@@ -169,7 +162,6 @@ public:
                     if(text[j] != pattern[i]){
                         return;
                     }
-                return;
                 }
             } else { 
                 return;
@@ -184,50 +176,22 @@ public:
     // }
 };
 
-// int main(){
-    // std::string str;
-    // std::cin >> str;
-    // SuffTree tree(str);
-    // int i = 1;
-    // while(std::cin >> str){
-        // std::vector<int> ans;
-        // tree.Find(str, ans);
-        // if(!ans.empty()){
-        //     std::cout << i << ": " << ans[0];
-        //     for(int j = 1; j < ans.size(); ++j){
-        //         std::cout << ", " << ans[j];
-        //     }
-        //     std::cout << "\n";
-        // }
-        // ++i;
-    // }
-    // return 0;
-// }
 int main(){
-    std::cin.tie(nullptr);
-    std::cout.tie(nullptr);
-    std::ios_base::sync_with_stdio(false);
     std::string str;
-    std::ifstream file("tests.txt");
-    getline(file, str);
+    std::cin >> str;
     SuffTree tree(str);
     int i = 1;
-    unsigned int start_time =  clock();
-    while(getline(file, str)){
+    while(std::cin >> str){
         std::vector<int> ans;
         tree.Find(str, ans);
-        // if(!ans.empty()){
-        //     std::cout << i << ": " << ans[0];
-        //     for(int j = 1; j < ans.size(); ++j){
-        //         std::cout << ", " << ans[j];
-        //     }
-        //     std::cout << "\n";
-        // }
-        // ++i;
+        if(!ans.empty()){
+            std::cout << i << ": " << ans[0];
+            for(int j = 1; j < ans.size(); ++j){
+                std::cout << ", " << ans[j];
+            }
+            std::cout << "\n";
+        }
+        ++i;
     }
-    unsigned int end_time = clock(); // конечное время
-    unsigned int search_time = end_time - start_time; // искомое время
-    std::cout << search_time << "\n";
     return 0;
-    file.close(); 
 }
